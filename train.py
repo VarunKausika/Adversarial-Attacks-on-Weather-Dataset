@@ -20,8 +20,13 @@ batch_size = 32
 num_epochs = 2
 
 # load data
+<<<<<<< Updated upstream
 composed_transform = transforms.Compose([transforms.ToTensor(), transforms.Resize((150, 150))]) # sequential transform
 dataset = dataset(root_dir='Adversarial Attacks on Weather Dataset/Multi-class Weather Dataset', transform=composed_transform) # loading in dataset
+=======
+composed_transform = transforms.Compose([transforms.ToTensor(), transforms.Resize((150, 150))])
+dataset = dataset(root_dir='Adversarial-Attacks-on-Weather-Dataset/Multi-class Weather Dataset', transform=composed_transform)
+>>>>>>> Stashed changes
 
 # split data into training and testing set
 train_size = math.ceil(0.7*dataset.__len__())
@@ -66,6 +71,8 @@ for epoch in range(num_epochs):
         images = images.to(device, dtype=torch.float)
         labels = labels.to(device, dtype=torch.float)
 
+        print(images.shape)
+
         # Forward pass
         outputs = model(images)
         loss = criterion(outputs, labels)
@@ -85,11 +92,19 @@ torch.save(model.state_dict(), PATH)
 with torch.no_grad():
     n_correct = 0
     n_samples = 0
+<<<<<<< Updated upstream
     n_class_correct = [0 for i in range(4)] # for getting class accuracies
     n_class_samples = [0 for i in range(4)]
     for images, labels in test_loader: # predicting on the test set
         images = images.to(device)
         labels = labels.to(device)
+=======
+    n_class_correct = [0 for i in range(10)]
+    n_class_samples = [0 for i in range(10)]
+    for images, labels in test_loader:
+        images = images.to(device, dtype=torch.float)
+        labels = labels.to(device, dtype=torch.float)
+>>>>>>> Stashed changes
         outputs = model(images)
 
         # max returns (value ,index)
