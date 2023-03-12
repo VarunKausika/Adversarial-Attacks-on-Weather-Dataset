@@ -24,8 +24,6 @@ trans = transforms.Lambda(lambda x: x.repeat(3, 1, 1) if x.size(0)==1 else x) # 
 composed_transform = transforms.Compose([transforms.ToTensor(), transforms.Resize((150, 150)), trans]) # sequential transform
 dataset = dataset(root_dir='Multi-class Weather Dataset', transform=composed_transform) # loading in dataset
 
-
-
 # split data into training and testing set
 train_size = math.ceil(0.7*dataset.__len__())
 test_size = dataset.__len__() - train_size
