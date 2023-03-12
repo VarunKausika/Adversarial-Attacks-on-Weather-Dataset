@@ -51,7 +51,7 @@ model = ConvNet().to(device=device)
 torchsummary.summary(model, (3, 150, 150))
 
 # defining the loss function and the optimizer
-loss = nn.CrossEntropyLoss()
+criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters())
 
 n_total_steps = len(train_loader)
@@ -63,7 +63,7 @@ for epoch in range(num_epochs):
 
         # Forward pass
         outputs = model(images)
-        loss = loss(outputs, labels)
+        loss = criterion(outputs, labels)
 
         # Backprop and optimize
         optimizer.zero_grad()
