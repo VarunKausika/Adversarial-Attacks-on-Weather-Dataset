@@ -7,7 +7,7 @@ import numpy as np
 
 class dataset(Dataset):
     """
-    This class allows Pytorch to load our dataset into the DataLoader library, according to Pytorch, in order to make a custom dataset,
+    This class allows Pytorch to load our dataset into the DataLoader library. According to Pytorch, in order to make a custom dataset,
     2 functions need to be defined: 
     __len__(): This returns the length of the dataset 
     __getitem__(idx): This returns a single item of the dataset at a specified index idx
