@@ -56,10 +56,15 @@ optimizer = optim.Adam(model.parameters())
 
 n_total_steps = len(train_loader)
 print(n_total_steps)
+<<<<<<< Updated upstream
 for epoch in range(num_epochs): 
+=======
+for epoch in range(num_epochs):
+    print("Running Epoch",epoch)
+>>>>>>> Stashed changes
     for i, (images, labels) in tqdm(enumerate(train_loader)):
-        images = images.to(device)
-        labels = labels.to(device)
+        images = images.to(device, dtype=torch.float)
+        labels = labels.to(device, dtype=torch.float)
 
         # Forward pass
         outputs = model(images)
