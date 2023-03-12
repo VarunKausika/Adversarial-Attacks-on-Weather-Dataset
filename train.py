@@ -63,7 +63,6 @@ for epoch in range(num_epochs):
         images = images.to(device, dtype=torch.float)
         labels = labels.to(device, dtype=torch.float)
 
-        print(images.shape)
 
         # Forward pass
         outputs = model(images)
