@@ -5,7 +5,7 @@ class ConvNet(nn.Module):
     def __init__(self):
         super(ConvNet, self).__init__()
         self.conv1 = nn.Conv2d(3, 128, 11, 4) # relu
-        self.norm1 = nn.BatchNorm2d(128) # use norm1d or 2d?
+        self.norm1 = nn.BatchNorm2d(128) 
         self.pool1 = nn.MaxPool2d(2, 2)
         self.conv2 = nn.Conv2d(128, 256, 5, padding='same') # relu
         self.norm2 = nn.BatchNorm2d(256)  
