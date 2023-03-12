@@ -63,7 +63,6 @@ for epoch in range(num_epochs):
         images = images.to(device, dtype=torch.float)
         labels = labels.to(device, dtype=torch.float)
 
-
         # Forward pass
         outputs = model(images)
         loss = criterion(outputs, labels)
