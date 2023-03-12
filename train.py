@@ -100,7 +100,6 @@ with torch.no_grad():
 
         # Reshape Labels
         labels = torch.argmax(labels, dim = 1)
-        print(labels)
 
         n_samples += labels.size(0)
         n_correct += (predicted == labels).sum().item() # number correct
