@@ -20,8 +20,11 @@ batch_size = 32
 num_epochs = 2
 
 # load data
+
 composed_transform = transforms.Compose([transforms.ToTensor(), transforms.Resize((150, 150))]) # sequential transform
-dataset = dataset(root_dir='Adversarial Attacks on Weather Dataset/Multi-class Weather Dataset', transform=composed_transform) # loading in dataset
+dataset = dataset(root_dir='Adversarial-Attacks-on-Weather-Dataset/Multi-class Weather Dataset', transform=composed_transform) # loading in dataset
+
+
 
 # split data into training and testing set
 train_size = math.ceil(0.7*dataset.__len__())
@@ -51,19 +54,22 @@ model = ConvNet().to(device=device)
 torchsummary.summary(model, (3, 150, 150))
 
 # defining the loss function and the optimizer
-loss = nn.CrossEntropyLoss()
+criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters())
 
 n_total_steps = len(train_loader)
 print(n_total_steps)
-for epoch in range(num_epochs): 
+for epoch in range(num_epochs):
+    print("Running Epoch",epoch)
     for i, (images, labels) in tqdm(enumerate(train_loader)):
-        images = images.to(device)
-        labels = labels.to(device)
+        images = images.to(device, dtype=torch.float)
+        labels = labels.to(device, dtype=torch.float)
+
+        print(images.shape)
 
         # Forward pass
         outputs = model(images)
-        loss = loss(outputs, labels)
+        loss = criterion(outputs, labels)
 
         # Backprop and optimize
         optimizer.zero_grad()
@@ -85,6 +91,11 @@ with torch.no_grad():
     for images, labels in test_loader: # predicting on the test set
         images = images.to(device)
         labels = labels.to(device)
+    n_class_correct = [0 for i in range(10)]
+    n_class_samples = [0 for i in range(10)]
+    for images, labels in test_loader:
+        images = images.to(device, dtype=torch.float)
+        labels = labels.to(device, dtype=torch.float)
         outputs = model(images)
 
         # max returns (value ,index)

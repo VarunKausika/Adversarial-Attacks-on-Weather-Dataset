@@ -16,7 +16,8 @@ class ConvNet(nn.Module):
         self.norm4 = nn.BatchNorm2d(256)
         self.conv5 = nn.Conv2d(256, 256, 1, 1, padding='same') # relu
         self.norm5 = nn.BatchNorm2d(256)
-        self.pool3 = nn.MaxPool2d(2, 2) 
+        self.pool3 = nn.MaxPool2d(2, 2)
+        self.flatten = nn.Flatten()
         self.lin1 = nn.Linear(1024, 1024) # relu
         self.dropout1 = nn.Dropout(0.5)
         self.lin2 = nn.Linear(1024, 1024) # relu
@@ -37,6 +38,7 @@ class ConvNet(nn.Module):
         x = F.relu(self.conv5(x))
         x = self.norm5(x)
         x = self.pool3(x)
+        x = self.flatten(x)
         x = F.relu(self.lin1(x))
         x = self.dropout1(x)
         x = F.relu(self.lin2(x))
