@@ -17,7 +17,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # hyperparameters
 batch_size = 32
-num_epochs = 2
+num_epochs = 5
 
 # load data
 trans = transforms.Lambda(lambda x: x.repeat(3, 1, 1) if x.size(0)==1 else x) # transform to make greyscale images have the same channels
