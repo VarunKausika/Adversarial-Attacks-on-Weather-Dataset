@@ -84,11 +84,7 @@ with torch.no_grad():
     n_samples = 0
     n_class_correct = [0 for i in range(4)] # for getting class accuracies
     n_class_samples = [0 for i in range(4)]
-    for images, labels in test_loader: # predicting on the test set
-        images = images.to(device)
-        labels = labels.to(device)
-    n_class_correct = [0 for i in range(10)]
-    n_class_samples = [0 for i in range(10)]
+
     for images, labels in test_loader:
         images = images.to(device, dtype=torch.float)
         labels = labels.to(device, dtype=torch.float)
@@ -103,16 +99,16 @@ with torch.no_grad():
         n_samples += labels.size(0)
         n_correct += (predicted == labels).sum().item() # number correct
         
-        # for i in range(batch_size): 
-        #    label = labels[i]
-        #    pred = predicted[i]
-        #    if (label == pred):
-        #        n_class_correct[label] += 1 # for each class, seeing whether predictions and labels are same
-        #    n_class_samples[label] += 1
+        for i in range(len(labels)): 
+           label = labels[i]
+           pred = predicted[i]
+           if (label == pred):
+               n_class_correct[label] += 1 # for each class, seeing whether predictions and labels are same
+           n_class_samples[label] += 1
 
     acc = 100.0 * n_correct / n_samples
     print(f'Accuracy of the network: {acc} %')
 
-    # for i in range(4):
-    #     acc = 100.0 * n_class_correct[i] / n_class_samples[i]
-    #     print(f'Accuracy of {classes[i]}: {acc} %')
+    for i in range(4):
+        acc = 100.0 * n_class_correct[i] / n_class_samples[i]
+        print(f'Accuracy of {classes[i]}: {acc} %')

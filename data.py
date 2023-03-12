@@ -1,4 +1,5 @@
 import os
+import torch
 from torch.utils.data import Dataset
 from skimage import io
 from skimage.color import rgba2rgb
