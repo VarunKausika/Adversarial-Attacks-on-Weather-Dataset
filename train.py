@@ -20,9 +20,9 @@ batch_size = 32
 num_epochs = 2
 
 # load data
-
-composed_transform = transforms.Compose([transforms.ToTensor(), transforms.Resize((150, 150))]) # sequential transform
-dataset = dataset(root_dir='Adversarial-Attacks-on-Weather-Dataset/Multi-class Weather Dataset', transform=composed_transform) # loading in dataset
+trans = transforms.Lambda(lambda x: x.repeat(3, 1, 1) if x.size(0)==1 else x) # transform to make greyscale images have the same channels
+composed_transform = transforms.Compose([transforms.ToTensor(), transforms.Resize((150, 150)), trans]) # sequential transform
+dataset = dataset(root_dir='Multi-class Weather Dataset', transform=composed_transform) # loading in dataset
 
 
 
