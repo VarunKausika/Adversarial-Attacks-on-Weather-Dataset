@@ -97,15 +97,20 @@ with torch.no_grad():
 
         # max returns (value ,index)
         _, predicted = torch.max(outputs, 1) # get our predictions
+
+        # Reshape Labels
+        labels = torch.argmax(labels, dim = 1)
+        print(labels)
+
         n_samples += labels.size(0)
         n_correct += (predicted == labels).sum().item() # number correct
         
-        for i in range(batch_size): # 
-            label = labels[i]
-            pred = predicted[i]
-            if (label == pred):
-                n_class_correct[label] += 1 # for each class, seeing whether predictions and labels are same
-            n_class_samples[label] += 1
+        #for i in range(batch_size): #
+        #    label = labels[i]
+        #    pred = predicted[i]
+        #    if (label == pred):
+        #        n_class_correct[label] += 1 # for each class, seeing whether predictions and labels are same
+        #    n_class_samples[label] += 1
 
     acc = 100.0 * n_correct / n_samples
     print(f'Accuracy of the network: {acc} %')
