@@ -46,5 +46,5 @@ class ConvNet(nn.Module):
         x = self.dropout1(x)
         x = F.relu(self.lin2(x))
         x = self.dropout2(x)
-        x = F.softmax(self.lin3(x))
+        x = F.softmax(self.lin3(x), dim=1)
         return x

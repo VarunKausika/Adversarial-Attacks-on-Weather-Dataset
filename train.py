@@ -105,7 +105,7 @@ with torch.no_grad():
         n_samples += labels.size(0)
         n_correct += (predicted == labels).sum().item() # number correct
         
-        #for i in range(batch_size): #
+        # for i in range(batch_size): #
         #    label = labels[i]
         #    pred = predicted[i]
         #    if (label == pred):
@@ -115,6 +115,6 @@ with torch.no_grad():
     acc = 100.0 * n_correct / n_samples
     print(f'Accuracy of the network: {acc} %')
 
-    for i in range(10):
-        acc = 100.0 * n_class_correct[i] / n_class_samples[i]
-        print(f'Accuracy of {classes[i]}: {acc} %')
+    # for i in range(4):
+    #     acc = 100.0 * n_class_correct[i] / n_class_samples[i]
+    #     print(f'Accuracy of {classes[i]}: {acc} %')
