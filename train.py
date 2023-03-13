@@ -16,7 +16,7 @@ import torchsummary
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') 
 
 # hyperparameters
-batch_size = 32
+batch_size = 200
 num_epochs = 10
 
 # load data
