@@ -11,13 +11,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
 import torchsummary
+from torch.utils.tensorboard import SummaryWriter
+writer = SummaryWriter("runs/MCWD")
 
 # set device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') 
 
 # hyperparameters
 batch_size = 32
-num_epochs = 5
+num_epochs = 10
 
 # load data
 trans = transforms.Lambda(lambda x: x.repeat(3, 1, 1) if x.size(0)==1 else x) # transform to make greyscale images have the same channels
@@ -32,7 +34,8 @@ train_set, test_set = torch.utils.data.random_split(dataset, [train_size, test_s
 def imshow(img):  # function to plot an image
     npimg = img.numpy()
     plt.imshow(np.transpose(npimg, (1, 2, 0)))
-    plt.show()
+    # plt.show()
+
 
 # loading the data
 train_loader = DataLoader(dataset=train_set, batch_size=batch_size, shuffle=True) # this function automatically loads our dataset 
@@ -44,8 +47,9 @@ classes = ('Cloudy', 'Rain', 'Shine', 'Sunrise')
 dataiter = iter(train_loader)
 images, labels = next(dataiter)
 
-# show images
-imshow(torchvision.utils.make_grid(images))
+# add images to tensorboard
+imgs = torchvision.utils.make_grid(images)
+writer.add_image('example_images', imgs)
 
 # loading the model
 model = ConvNet().to(device=device)
@@ -53,11 +57,16 @@ torchsummary.summary(model, (3, 150, 150))
 
 # defining the loss function and the optimizer
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters())
+optimizer = optim.SGD(model.parameters(), lr=0.01)
+
+# saving model graph to tensorboard
+writer.add_graph(model, images.to(device, dtype=torch.float))
 
 n_total_steps = len(train_loader)
-print(n_total_steps)
 for epoch in range(num_epochs):
+    running_loss = 0
+    running_correct = 0
+    n_samples = 0
     print("Running Epoch",epoch)
     for i, (images, labels) in tqdm(enumerate(train_loader)):
         images = images.to(device, dtype=torch.float)
@@ -72,10 +81,24 @@ for epoch in range(num_epochs):
         loss.backward()
         optimizer.step()
 
+        running_loss += loss.item()
+        _, predicted = torch.max(outputs, 1)
+
+        # reshape labels
+        labels = torch.argmax(labels, dim = 1)
+        n_samples += labels.size(0)
+        running_correct += (predicted == labels).sum().item()
+
         if (i+1) % 5 == 0: # print progress
             print (f'Epoch [{epoch+1}/{num_epochs}], Step [{i+1}/{n_total_steps}], Loss: {loss.item():.4f}')
+    
+    writer.add_scalar('training_loss_every_epoch', running_loss/100, epoch)
+    writer.add_scalar('training_accuracy_every_epoch', 100*running_correct/n_samples, epoch)
+
+writer.close()
 
 print('Finished Training')
+print(f'Training accuracy of the network: {100*running_correct/n_samples} %')
 PATH = './cnn.pth' # save trained model to path
 torch.save(model.state_dict(), PATH)
 
@@ -106,8 +129,8 @@ with torch.no_grad():
                n_class_correct[label] += 1 # for each class, seeing whether predictions and labels are same
            n_class_samples[label] += 1
 
-    acc = 100.0 * n_correct / n_samples
-    print(f'Accuracy of the network: {acc} %')
+    test_acc = 100.0 * n_correct / n_samples
+    print(f'Testing accuracy of the network: {test_acc} %')
 
     for i in range(4):
         acc = 100.0 * n_class_correct[i] / n_class_samples[i]
