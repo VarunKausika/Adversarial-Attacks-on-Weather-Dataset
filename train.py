@@ -11,14 +11,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
 import torchsummary
-<<<<<<< Updated upstream
+
 from torch.utils.tensorboard import SummaryWriter
 writer = SummaryWriter("runs/MCWD")
-=======
-from transformers import ViTImageProcessor, ViTForImageClassification
 
 
->>>>>>> Stashed changes
+
 
 # set device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') 
