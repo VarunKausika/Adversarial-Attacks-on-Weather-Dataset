@@ -8,3 +8,4 @@ runs/
 __pycache__/data.cpython-39.pyc
 __pycache__/models.cpython-39.pyc
 alex-cnn.pth
+runs/MCWD
