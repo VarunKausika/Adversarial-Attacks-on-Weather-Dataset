@@ -58,7 +58,7 @@ def pretrainedConvNet():
     features = nn.ModuleList(hub.load('pytorch/vision:v0.10.0', 'alexnet', pretrained=True).children())[:-1]
     model_features = nn.Sequential(*features)
 
-    new_layers = some_more_layers = nn.Sequential(
+    new_layers = nn.Sequential(
         nn.Flatten(),
         nn.Linear(9216, 9216),
         nn.ReLU(),
@@ -67,7 +67,7 @@ def pretrainedConvNet():
         nn.ReLU(),
         nn.Dropout(0.5),
         nn.Linear(1024, 4),
-        nn.Softmax()
+        nn.Softmax(dim=1)
     )
     pretrained_model = nn.Sequential(model_features,
                                      new_layers)

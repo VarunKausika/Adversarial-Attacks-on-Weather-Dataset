@@ -100,8 +100,8 @@ def train(model, preprocess = None, PATH = None, dataset = dataset):
             if (i+1) % 5 == 0: # print progress
                 print (f'Epoch [{epoch+1}/{num_epochs}], Step [{i+1}/{n_total_steps}], Loss: {loss.item():.4f}')
 
-        writer.add_scalar('training_loss_every_epoch', running_loss/100, epoch)
-        writer.add_scalar('training_accuracy_every_epoch', 100*running_correct/n_samples, epoch)
+        writer.add_scalar(f'training_loss_every_epoch', running_loss/100, epoch)
+        writer.add_scalar(f'training_accuracy_every_epoch', 100*running_correct/n_samples, epoch)
 
     writer.close()
 
@@ -118,7 +118,7 @@ def train(model, preprocess = None, PATH = None, dataset = dataset):
 
         for images, labels in test_loader:
             images = images.to(device, dtype=torch.float)
-            if(preprocess):
+            if preprocess:
                 images = preprocess(images)
             labels = labels.to(device, dtype=torch.float)
             outputs = model(images)
@@ -135,7 +135,7 @@ def train(model, preprocess = None, PATH = None, dataset = dataset):
             for i in range(len(labels)):
                label = labels[i]
                pred = predicted[i]
-               if (label == pred):
+               if label == pred:
                    n_class_correct[label] += 1 # for each class, seeing whether predictions and labels are same
                n_class_samples[label] += 1
 
@@ -148,7 +148,5 @@ def train(model, preprocess = None, PATH = None, dataset = dataset):
 
 train(ConvNet(), PATH = './cnn.pth')
 train(pretrainedConvNet(), preprocess = transforms.Compose([
-
-
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])]),
-      PATH = './alex-cnn.pth')
+    PATH = './alex-cnn.pth')
