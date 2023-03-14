@@ -6,13 +6,19 @@ import torchvision
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 from data import dataset # importing dataset class from data.py
-from models import ConvNet # importing ConvNet class from models.py
+from models import ConvNet, pretrainedConvNet  # importing ConvNet class from models.py
 import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
 import torchsummary
+<<<<<<< Updated upstream
 from torch.utils.tensorboard import SummaryWriter
 writer = SummaryWriter("runs/MCWD")
+=======
+from transformers import ViTImageProcessor, ViTForImageClassification
+
+
+>>>>>>> Stashed changes
 
 # set device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') 
@@ -52,7 +58,7 @@ imgs = torchvision.utils.make_grid(images)
 writer.add_image('example_images', imgs)
 
 # loading the model
-model = ConvNet().to(device=device)
+model = pretrainedConvNet().to(device=device)
 torchsummary.summary(model, (3, 150, 150))
 
 # defining the loss function and the optimizer
@@ -135,3 +141,5 @@ with torch.no_grad():
     for i in range(4):
         acc = 100.0 * n_class_correct[i] / n_class_samples[i]
         print(f'Accuracy of {classes[i]}: {acc} %')
+
+# Finetuning Pretrained Embeddings
