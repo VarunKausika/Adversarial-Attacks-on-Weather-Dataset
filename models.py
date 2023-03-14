@@ -55,15 +55,15 @@ def pretrainedConvNet():
     """
     An AlexNet - like model with pretrained AlexNet Embeddings been implemented.
     """
-    features = nn.ModuleList(hub.load('pytorch/vision:v0.10.0', 'alexnet', pretrained=True).children())[:-2]
+    features = nn.ModuleList(hub.load('pytorch/vision:v0.10.0', 'alexnet', pretrained=True).children())[:-1]
     model_features = nn.Sequential(*features)
 
     new_layers = some_more_layers = nn.Sequential(
         nn.Flatten(),
-        nn.Linear(2304, 1024),
+        nn.Linear(9216, 9216),
         nn.ReLU(),
         nn.Dropout(0.5),
-        nn.Linear(1024, 1024),
+        nn.Linear(9216, 1024),
         nn.ReLU(),
         nn.Dropout(0.5),
         nn.Linear(1024, 4),
