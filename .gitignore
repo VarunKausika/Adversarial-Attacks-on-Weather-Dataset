@@ -11,3 +11,5 @@ alex-cnn.pth
 runs/MCWD
 __pycache__/
 cnn.pth
+alex-cnn_attacked.pth
+cnn_attacked.pth

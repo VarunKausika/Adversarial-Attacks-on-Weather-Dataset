@@ -30,7 +30,7 @@ def train(model, preprocess = None, PATH = None, dataset = dataset):
     # load data
     trans = transforms.Lambda(lambda x: x.repeat(3, 1, 1) if x.size(0)==1 else x) # transform to make greyscale images have the same channels
     composed_transform = transforms.Compose([transforms.ToTensor(), transforms.Resize((150, 150)), trans]) # sequential transform
-    dataset = dataset(root_dir='Multi-class Weather Dataset', transform=composed_transform) # loading in dataset
+    dataset = dataset(root_dir='MCWD_attacked', transform=composed_transform) # loading in dataset
 
     # split data into training and testing set
     train_size = math.ceil(0.7*dataset.__len__())
@@ -146,7 +146,7 @@ def train(model, preprocess = None, PATH = None, dataset = dataset):
             acc = 100.0 * n_class_correct[i] / n_class_samples[i]
             print(f'Accuracy of {classes[i]}: {acc} %')
 
-train(ConvNet(), PATH = './cnn.pth')
+# train(ConvNet(), PATH = './cnn_attacked.pth')
 train(pretrainedConvNet(), preprocess = transforms.Compose([
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])]),
-    PATH = './alex-cnn.pth')
+    PATH = './alex-cnn_attacked.pth')
