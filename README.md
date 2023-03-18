@@ -6,9 +6,9 @@ This is an implementation of adversarial attacks like undirected and directed FG
 
 **Undirected FGSM**:
 $$||X−X̂||∞⩽ϵ$$
-$$X_{adv} = X + ϵ * sign(∇_{X}J(X,Y_{true})$$
+$$X_{adv} = X + ϵ * sign(∇_{X}J(X,Y_{true}))$$
 
 **Directed FGSM**:
-$$X_{adv}=X−ϵ*sign(∇_{X}J(X,Y_{target})$$
+$$X_{adv}=X−ϵ*sign(∇_{X}J(X,Y_{target}))$$
 
 The attacks were performed on 1000 images in our dataset and augmented back into our training set. The results on re-training on the attacked datasets were tested for robustness for both types of attacks again.
