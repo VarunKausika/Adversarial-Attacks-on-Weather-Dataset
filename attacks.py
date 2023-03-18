@@ -170,27 +170,32 @@ def evaluate_model_robustness(model_cnn_1, model_cnn_2, root_dir, transform):
     count_correct_undirected_normal=0
     count_correct_directed_attacked=0
     count_correct_undirected_attacked=0
+
+    # Turn off issue with dropout. Google it if you care just don't change it.
+    model_cnn_1.eval()
+    model_cnn_2.eval()
     for i in tqdm(range(100)):
-        
+
         # getting the regular model's prediction for the attacked image - directed and undirected
-        output_adv_cnn_directed = model_cnn_1.forward(Variable(attacked_img_directed))
+        output_adv_cnn_directed = model_cnn_1(attacked_img_directed)
         predict_label_directed = torch.argmax(output_adv_cnn_directed).item()
-        output_adv_cnn_undirected = model_cnn_1.forward(Variable(attacked_img_undirected))
+        output_adv_cnn_undirected = model_cnn_1(attacked_img_undirected)
         predict_label_undirected = torch.argmax(output_adv_cnn_undirected).item()
         if predict_label_directed==np.where(label==1)[0][0]:
             count_correct_directed_normal+=1
         if predict_label_undirected==np.where(label==1)[0][0]:
-            count_correct_undirected_normal+=1 
+            count_correct_undirected_normal+=1
+
 
         # getting the attacked model's prediction for the attacked image - directed and undirected
-        output_adv_cnn_directed = model_cnn_2.forward(Variable(attacked_img_directed))
+        output_adv_cnn_directed = model_cnn_2(attacked_img_directed)
         predict_label_directed = torch.argmax(output_adv_cnn_directed).item()
-        output_adv_cnn_undirected = model_cnn_2.forward(Variable(attacked_img_undirected))
+        output_adv_cnn_undirected = model_cnn_2(attacked_img_undirected)
         predict_label_undirected = torch.argmax(output_adv_cnn_undirected).item()
         if predict_label_directed==np.where(label==1)[0][0]:
             count_correct_directed_attacked+=1
         if predict_label_undirected==np.where(label==1)[0][0]:
-            count_correct_undirected_attacked+=1 
+            count_correct_undirected_attacked+=1
 
     print(f"""
     Regular CNN: Accuracy on FGSM (Undirected) image: {count_correct_undirected_normal}% \n

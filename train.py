@@ -146,7 +146,7 @@ def train(model, preprocess = None, PATH = None, dataset = dataset):
             acc = 100.0 * n_class_correct[i] / n_class_samples[i]
             print(f'Accuracy of {classes[i]}: {acc} %')
 
-# train(ConvNet(), PATH = './cnn_attacked.pth')
+train(ConvNet(), PATH = './cnn_attacked.pth')
 train(pretrainedConvNet(), preprocess = transforms.Compose([
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])]),
     PATH = './alex-cnn_attacked.pth')
