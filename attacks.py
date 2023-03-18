@@ -138,7 +138,7 @@ def create_attacked_training_set(model_cnn, root_dir, transform):
             label_text = classes[np.where(label==1)[0][0]]
             attacked_img = attacked_img.squeeze(0).permute(1, 2, 0)
             skimage.io.imsave(f'MCWD_attacked/{label_text}/undirect_attack_{i+1}.jpg', attacked_img)
-            img = attacked_img.squeeze(0).permute(1, 2, 0)
+            img = img.squeeze(0).permute(1, 2, 0)
             skimage.io.imsave(f'MCWD_attacked/{label_text}/original_{i+1}.jpg', img)
 
         except:
@@ -174,13 +174,13 @@ def evaluate_model_robustness(model_cnn_1, model_cnn_2, root_dir, transform):
     model_cnn_2.eval()
     for i in tqdm(range(test_size)):
         img, label = train_set.__getitem__(i)
-        # attacking each test image from our dataset
+        # attacking each test image from our dataset against model 1
         try:
-            attacked_img_undirected = FGSM_undirected(model_cnn, img)
+            attacked_img_undirected = FGSM_undirected(model_cnn_1, img)
         except:
             pass
         try:
-            attacked_img_directed = FGSM_directed(model_cnn, img)
+            attacked_img_directed = FGSM_directed(model_cnn_1, img)
         except:
             pass
 
@@ -194,6 +194,16 @@ def evaluate_model_robustness(model_cnn_1, model_cnn_2, root_dir, transform):
         if predict_label_undirected==np.where(label==1)[0][0]:
             count_correct_undirected_normal+=1
 
+
+        # attacking each test image from our dataset against model 2
+        try:
+            attacked_img_undirected = FGSM_undirected(model_cnn_2, img)
+        except:
+            pass
+        try:
+            attacked_img_directed = FGSM_directed(model_cnn_2, img)
+        except:
+            pass
 
         # getting the attacked model's prediction for the attacked image - directed and undirected
         output_adv_cnn_directed = model_cnn_2(attacked_img_directed)
