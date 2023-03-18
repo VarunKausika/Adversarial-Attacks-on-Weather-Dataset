@@ -10,6 +10,7 @@ import warnings
 import os
 from tqdm import tqdm
 import skimage
+import math
 
 warnings.filterwarnings('ignore')
 
@@ -100,7 +101,7 @@ def FGSM_directed(model_cnn, img):
     #     plt.show() 
     return x_adversarial
 
-def create_attacked_training_set(model_cnn, root_dir, transform, n_attacks):
+def create_attacked_training_set(model_cnn, root_dir, transform):
     # loading in dataset
     data = dataset(root_dir=root_dir, transform=transform)
     len_data = data.__len__()
@@ -108,34 +109,40 @@ def create_attacked_training_set(model_cnn, root_dir, transform, n_attacks):
     # defining classes (used when saving image)
     classes = ('Cloudy', 'Rain', 'Shine', 'Sunrise')
 
-    # performing the attacks randomly and adding them back to the new dataset
-    for i in tqdm(range(n_attacks)):
+    train_size = math.ceil(0.7*len_data)
+    test_size = len_data - train_size
+    generator1 = torch.Generator().manual_seed(42)
+    train_set, test_set = torch.utils.data.random_split(data, [train_size, test_size], generator = generator1)
 
-        img, label = data.__getitem__(np.random.choice(len_data))
+
+    # performing the attacks randomly and adding them back to the new dataset
+    for i in tqdm(range(train_size)):
+
+        img, label = train_set.__getitem__(i)
         # D=directed, U=undirected
         attack = np.random.choice(['D', 'U'])
-        
-        if attack=='U':
-            try:
-                attacked_img = FGSM_undirected(model_cnn, img)
-                # saving the image in our attacked dataset
-                label_text = classes[np.where(label==1)[0][0]]
-                attacked_img = attacked_img.squeeze(0).permute(1, 2, 0)
-                skimage.io.imsave(f'MCWD_attacked/{label_text}/attack_{i+1}.jpg', attacked_img)
 
-            except:
-                pass
-        
-        else:
-            try:
-                attacked_img = FGSM_directed(model_cnn, img)
-                # saving the image in our attacked dataset
-                label_text = classes[np.where(label==1)[0][0]]
-                attacked_img = attacked_img.squeeze(0).permute(1, 2, 0)
-                skimage.io.imsave(f'MCWD_attacked/{label_text}/attack_{i+1}.jpg', attacked_img)
+        try:
+            attacked_img = FGSM_undirected(model_cnn, img)
+            # saving the image in our attacked dataset
+            label_text = classes[np.where(label==1)[0][0]]
+            attacked_img = attacked_img.squeeze(0).permute(1, 2, 0)
+            skimage.io.imsave(f'MCWD_attacked/{label_text}/direct_attack_{i+1}.jpg', attacked_img)
 
-            except:
-                pass
+        except:
+            pass
+
+        try:
+            attacked_img = FGSM_directed(model_cnn, img)
+            # saving the image in our attacked dataset
+            label_text = classes[np.where(label==1)[0][0]]
+            attacked_img = attacked_img.squeeze(0).permute(1, 2, 0)
+            skimage.io.imsave(f'MCWD_attacked/{label_text}/undirect_attack_{i+1}.jpg', attacked_img)
+            img = attacked_img.squeeze(0).permute(1, 2, 0)
+            skimage.io.imsave(f'MCWD_attacked/{label_text}/original_{i+1}.jpg', img)
+
+        except:
+            pass
         
 # create_attacked_training_set(model_cnn, 'Multi-class Weather Dataset', composed_transform, 1000)
 
@@ -149,22 +156,13 @@ def evaluate_model_robustness(model_cnn_1, model_cnn_2, root_dir, transform):
     # loading in dataset
     data = dataset(root_dir=root_dir, transform=transform)
     len_data = data.__len__()
-    item_idx = np.random.choice(len_data)
-    img, label = data.__getitem__(item_idx)
+    train_size = math.ceil(0.7 * len_data)
+    test_size = len_data - train_size
+    generator1 = torch.Generator().manual_seed(42)
+    train_set, test_set = torch.utils.data.random_split(data, [train_size, test_size], generator=generator1)
 
-    # plotting our image
-    plt.imshow(img.squeeze(0).permute(1, 2, 0))
-    plt.show()
 
-    # attacking a random image from our dataset
-    try:
-        attacked_img_undirected = FGSM_undirected(model_cnn, img)
-    except:
-        pass
-    try:
-        attacked_img_directed = FGSM_directed(model_cnn, img)
-    except:
-        pass
+
 
     count_correct_directed_normal=0
     count_correct_undirected_normal=0
@@ -174,7 +172,17 @@ def evaluate_model_robustness(model_cnn_1, model_cnn_2, root_dir, transform):
     # Turn off issue with dropout. Google it if you care just don't change it.
     model_cnn_1.eval()
     model_cnn_2.eval()
-    for i in tqdm(range(100)):
+    for i in tqdm(range(test_size)):
+        img, label = train_set.__getitem__(i)
+        # attacking each test image from our dataset
+        try:
+            attacked_img_undirected = FGSM_undirected(model_cnn, img)
+        except:
+            pass
+        try:
+            attacked_img_directed = FGSM_directed(model_cnn, img)
+        except:
+            pass
 
         # getting the regular model's prediction for the attacked image - directed and undirected
         output_adv_cnn_directed = model_cnn_1(attacked_img_directed)
@@ -198,10 +206,10 @@ def evaluate_model_robustness(model_cnn_1, model_cnn_2, root_dir, transform):
             count_correct_undirected_attacked+=1
 
     print(f"""
-    Regular CNN: Accuracy on FGSM (Undirected) image: {count_correct_undirected_normal}% \n
-    Regular CNN: Accuracy on FGSM (Directed) image: {count_correct_directed_normal}% \n
-    Attacked CNN: Accuracy on FGSM (Undirected) image: {count_correct_undirected_attacked}% \n
-    Attacked CNN: Accuracy on FGSM (Directed) image: {count_correct_directed_attacked}% 
+    Regular CNN: Accuracy on FGSM (Undirected) image: {100*count_correct_undirected_normal/test_size}% \n
+    Regular CNN: Accuracy on FGSM (Directed) image: {100*count_correct_directed_normal/test_size}% \n
+    Attacked CNN: Accuracy on FGSM (Undirected) image: {100*count_correct_undirected_attacked/test_size}% \n
+    Attacked CNN: Accuracy on FGSM (Directed) image: {100*count_correct_directed_attacked/test_size}% 
     """)
 
 evaluate_model_robustness(model_cnn, model_cnn_2, 'Multi-class Weather Dataset', composed_transform)
