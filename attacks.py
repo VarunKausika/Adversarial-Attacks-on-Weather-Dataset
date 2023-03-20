@@ -173,7 +173,7 @@ def evaluate_model_robustness(model_cnn_1, model_cnn_2, root_dir, transform):
     model_cnn_1.eval()
     model_cnn_2.eval()
     for i in tqdm(range(test_size)):
-        img, label = train_set.__getitem__(i)
+        img, label = test_set.__getitem__(i)
         # attacking each test image from our dataset against model 1
         try:
             attacked_img_undirected = FGSM_undirected(model_cnn_1, img)

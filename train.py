@@ -16,7 +16,6 @@ from attacks import create_attacked_training_set
 from torch.utils.tensorboard import SummaryWriter
 writer = SummaryWriter("runs/MCWD")
 
-
 def train(model, preprocess = None, PATH = None, dataset = dataset, dataset_dir = "Multi-class Weather Dataset"):
     """Completes our training process for a model, where data is preprocessed using a transform preprocess,
     and sends path to path. By default if preprocess is none no preprocessing is performed. If path = None
